@@ -1,7 +1,7 @@
-# ITC 492 Senior Design — [Project Title]
+# ITC 492 Senior Design — [Detecting Recurring IT Problems Through Help Desk Ticket Analytics]
 
-**Author:** [Your name]
-**Advisor:** [Advisor name]
+**Author:** [Christopher Hernandez]
+**Advisor:** [Professor Hollister]
 **Term:** Fall 2026
 
 ---
@@ -88,5 +88,4 @@ problem-management analytics; proposal in progress.
 This project uses synthetic/sample data only. No real user data, no real ticket
 contents, no credentials are committed to this repository.
 
-*(If your project ever does touch real data, talk to your advisor about IRB or
-data-handling requirements BEFORE you collect anything.)*
+
