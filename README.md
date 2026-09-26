@@ -36,6 +36,8 @@ root causes, to check whether the analysis can find them on its own.
 - [ ] Problem records that link multiple related tickets to one underlying cause
 - [ ] Synthetic data generator with documented methodology and planted root causes
 - [ ] Evaluation: does the analysis surface the planted causes without being told?
+- [ ] Public deployment to an Oracle Cloud free-tier VPS, reachable at a public URL
+      (course requirement: the app must be publicly hosted before term end)
 
 **Out of scope:**
 - User accounts, logins, and role-based access (requester / technician / manager).
@@ -45,7 +47,8 @@ root causes, to check whether the analysis can find them on its own.
 - Asset / configuration item (CI) records
 - First-contact resolution metric
 - Email intake, notifications, file attachments, and a customer-facing portal
-- Production deployment or use with real users or real ticket data
+- Use with real users or real ticket data. The deployed instance runs on
+  synthetic data only.
 
 *These are candidates for future work, not part of this semester's deliverable.*
 
@@ -53,11 +56,11 @@ root causes, to check whether the analysis can find them on its own.
 
 | Layer | Choice | Why |
 |---|---|---|
-| Frontend | | |
-| Backend | | |
-| Database | | |
-| Hosting / Deploy | | |
-| Analytics / Reporting | | |
+| Frontend | Thymeleaf templates + Bootstrap | Integrates directly with Spring Boot; Bootstrap gives a clean look without hand-written CSS |
+| Backend | Java 21 + Spring Boot 3 | Primary language; Spring Boot's built-in CRUD scaffolding keeps the ticketing half deliberately small |
+| Database | H2 (local development), PostgreSQL (deployed) | H2 needs no setup locally; PostgreSQL is the durable choice on the server. Spring Data JPA makes the switch a configuration change |
+| Hosting / Deploy | Oracle Cloud Free Tier VPS (Ubuntu), app run as a systemd service | Course requires public hosting before term end; Oracle's always-free tier covers it at no cost |
+| Analytics / Reporting | SQL aggregate queries (service metrics), Weka: StringToWordVector + SimpleKMeans (clustering), Chart.js (dashboard charts) | SQL handles MTTR / SLA / aging / volume directly; Weka is an established Java text-clustering library and is straightforward to cite in the report |
 
 ## Repository Layout
 
@@ -78,10 +81,25 @@ has never seen your project can get it running in under ten minutes.*
 # setup steps go here
 ```
 
+## Deployment
+
+The course requires this application to be publicly hosted before the end of term,
+not only runnable locally. Target: an Oracle Cloud Free Tier VPS.
+
+*Fill in the public URL and deployment steps once it is live.*
+
+- [ ] Oracle Cloud free-tier account created
+- [ ] VPS instance provisioned, SSH access working
+- [ ] Java and PostgreSQL installed on the server
+- [ ] Firewall / security list opened for the app port
+- [ ] App running as a service that survives disconnect and reboot
+- [ ] Public URL recorded here
+
 ## Status
 
 Current: Scope narrowed to a lightweight ticketing core plus service and
-problem-management analytics; proposal in progress.
+problem-management analytics; public deployment added to scope per course
+requirement; proposal in progress.
 
 ## A Note on Data
 
