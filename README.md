@@ -1,7 +1,7 @@
 # ITC 492 Senior Design — [Detecting Recurring IT Problems Through Help Desk Ticket Analytics]
 
-**Author:** [Christopher Hernandez]
-**Advisor:** [Professor Hollister]
+**Author:** Christopher Hernandez
+**Advisor:** Professor Hollister
 **Term:** Fall 2026
 
 ---
