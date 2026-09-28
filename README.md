@@ -54,12 +54,12 @@ root causes, to check whether the analysis can find them on its own.
 
 ## Tech Stack
 
-| Layer | Choice | Why |
-|---|---|---|
-| Frontend | Thymeleaf templates + Bootstrap | Integrates directly with Spring Boot; Bootstrap gives a clean look without hand-written CSS |
-| Backend | Java 21 + Spring Boot 3 | Primary language; Spring Boot's built-in CRUD scaffolding keeps the ticketing half deliberately small |
-| Database | H2 (local development), PostgreSQL (deployed) | H2 needs no setup locally; PostgreSQL is the durable choice on the server. Spring Data JPA makes the switch a configuration change |
-| Hosting / Deploy | Oracle Cloud Free Tier VPS (Ubuntu), app run as a systemd service | Course requires public hosting before term end; Oracle's always-free tier covers it at no cost |
+| Layer | Choice                                                                                                                     | Why |
+|---|----------------------------------------------------------------------------------------------------------------------------|---|
+| Frontend | Thymeleaf templates + Bootstrap                                                                                            | Integrates directly with Spring Boot; Bootstrap gives a clean look without hand-written CSS |
+| Backend | Java 21 + Spring Boot 4                                                                                                    | Primary language; Spring Boot's built-in CRUD scaffolding keeps the ticketing half deliberately small |
+| Database | H2 (local development), PostgreSQL (deployed)                                                                              | H2 needs no setup locally; PostgreSQL is the durable choice on the server. Spring Data JPA makes the switch a configuration change |
+| Hosting / Deploy | Oracle Cloud Free Tier VPS (Ubuntu), app run as a systemd service                                                          | Course requires public hosting before term end; Oracle's always-free tier covers it at no cost |
 | Analytics / Reporting | SQL aggregate queries (service metrics), Weka: StringToWordVector + SimpleKMeans (clustering), Chart.js (dashboard charts) | SQL handles MTTR / SLA / aging / volume directly; Weka is an established Java text-clustering library and is straightforward to cite in the report |
 
 ## Repository Layout
