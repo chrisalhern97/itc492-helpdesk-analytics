@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Tickets</title>
+</head>
+<body>
+<main>
+    <h1>Tickets</h1>
+    <p><a th:href="@{/tickets/new}">Submit a ticket</a></p>
+    <p th:if="${#lists.isEmpty(tickets)}">No tickets yet.</p>
+    <table th:unless="${#lists.isEmpty(tickets)}">
+        <thead>
+        <tr><th scope="col">ID</th><th scope="col">Title</th><th scope="col">Description</th><th scope="col">Status</th><th scope="col">Created (UTC)</th></tr>
+        </thead>
+        <tbody>
+        <tr th:each="ticket : ${tickets}">
+            <td th:text="${ticket.id}"></td>
+            <td th:text="${ticket.title}"></td>
+            <td th:text="${ticket.description}"></td>
+            <td th:text="${ticket.status}"></td>
+            <td th:text="${ticket.createdDate}"></td>
+        </tr>
+        </tbody>
+    </table>
+</main>
+</body>
+</html>
