@@ -10,4 +10,5 @@ Record of AI assistance on this project. Tools used: ChatGPT, Codex (ChatGPT web
 | 2026-09-28 | — | Claude (chat) | Pointed out README said Spring Boot 3 while the project uses 4 | Read pom.xml myself: Spring Boot 4.1.1, Java 21; updated README |
 | 2026-10-13 | — | Codex (cloud) | Ran cloud environment setup: installed Java 21 compiler, configured Maven proxy; stopped on a model-capacity error | Not verified|
 | 2026-10-15 | — | Claude (chat) | Guided installing VS Code and the Claude Code extension; set it to Manual approval mode | Claude Code confirmed it was connected to this repo on main |
-| 2026-10-15 | — | Codex | Created ticket package (Ticket, TicketController, TicketRepository)  | Not yet reviewed |
+| 2026-10-15 | — | Codex | Created ticket package (Ticket, TicketController, TicketRepository)  | Read Ticket.java, TicketRepository.java and TicketController.java line by line on 2026-11-18; ran the app, submitted a valid ticket (appeared in the list) and an empty-title ticket (error message shown) |
+| 2026-11-18 | — | Claude (chat) | Explained Ticket.java, TicketRepository.java and TicketController.java line by line, and pointed out missing fields (priority, category, resolved_at) and the single OPEN status | Compared each explanation against the code myself |
