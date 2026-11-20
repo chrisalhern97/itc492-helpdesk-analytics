@@ -16,6 +16,10 @@ public class Ticket {
 
     public enum Status { OPEN }
 
+    public enum Priority { LOW, MEDIUM, HIGH, CRITICAL }
+
+    public enum Category { HARDWARE, SOFTWARE, NETWORK, ACCOUNT, OTHER }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -30,6 +34,14 @@ public class Ticket {
     @Column(nullable = false)
     private Status status = Status.OPEN;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Priority priority;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Category category;
+
     @Column(nullable = false, updatable = false)
     private Instant createdDate;
 
@@ -37,9 +49,11 @@ public class Ticket {
         // Required by JPA.
     }
 
-    public Ticket(String title, String description) {
+    public Ticket(String title, String description, Priority priority, Category category) {
         this.title = title;
         this.description = description;
+        this.priority = priority;
+        this.category = category;
     }
 
     @PrePersist
@@ -51,5 +65,7 @@ public class Ticket {
     public String getTitle() { return title; }
     public String getDescription() { return description; }
     public Status getStatus() { return status; }
+    public Priority getPriority() { return priority; }
+    public Category getCategory() { return category; }
     public Instant getCreatedDate() { return createdDate; }
 }

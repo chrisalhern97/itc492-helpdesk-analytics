@@ -19,6 +19,22 @@
             <textarea id="description" name="description" th:text="${description}"
                       required maxlength="5000" rows="6" cols="60"></textarea>
         </p>
+        <p>
+            <label for="priority">Priority</label><br>
+            <select id="priority" name="priority" required>
+                <option value="">Choose a priority</option>
+                <option th:each="p : ${priorities}" th:value="${p}" th:text="${p}"
+                        th:selected="${p.name() == priority}"></option>
+            </select>
+        </p>
+        <p>
+            <label for="category">Category</label><br>
+            <select id="category" name="category" required>
+                <option value="">Choose a category</option>
+                <option th:each="c : ${categories}" th:value="${c}" th:text="${c}"
+                        th:selected="${c.name() == category}"></option>
+            </select>
+        </p>
         <button type="submit">Submit ticket</button>
     </form>
     <p><a th:href="@{/tickets}">All tickets</a></p>
