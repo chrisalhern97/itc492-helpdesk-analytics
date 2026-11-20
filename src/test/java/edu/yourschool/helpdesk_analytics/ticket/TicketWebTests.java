@@ -30,7 +30,9 @@ class TicketWebTests {
         mvc.perform(get("/tickets/new"))
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString("name=\"title\"")))
-                .andExpect(content().string(containsString("name=\"description\"")));
+                .andExpect(content().string(containsString("name=\"description\"")))
+                .andExpect(content().string(containsString("name=\"priority\"")))
+                .andExpect(content().string(containsString("name=\"category\"")));
         mvc.perform(get("/tickets"))
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString("No tickets yet.")));
@@ -41,6 +43,8 @@ class TicketWebTests {
         mvc.perform(post("/tickets")
                         .param("title", "  Cannot sign in  ")
                         .param("description", "Login fails after the update.")
+                        .param("priority", "HIGH")
+                        .param("category", "ACCOUNT")
                         .param("id", "999")
                         .param("status", "CLOSED")
                         .param("createdDate", "2000-01-01T00:00:00Z"))
@@ -54,6 +58,8 @@ class TicketWebTests {
         assertThat(ticket.getTitle()).isEqualTo("Cannot sign in");
         assertThat(ticket.getDescription()).isEqualTo("Login fails after the update.");
         assertThat(ticket.getStatus()).isEqualTo(Ticket.Status.OPEN);
+        assertThat(ticket.getPriority()).isEqualTo(Ticket.Priority.HIGH);
+        assertThat(ticket.getCategory()).isEqualTo(Ticket.Category.ACCOUNT);
         assertThat(ticket.getCreatedDate()).isNotNull().isAfter(java.time.Instant.parse("2000-01-01T00:00:00Z"));
 
         mvc.perform(get("/tickets"))
@@ -61,6 +67,8 @@ class TicketWebTests {
                 .andExpect(content().string(containsString("Cannot sign in")))
                 .andExpect(content().string(containsString("Login fails after the update.")))
                 .andExpect(content().string(containsString("OPEN")))
+                .andExpect(content().string(containsString("HIGH")))
+                .andExpect(content().string(containsString("ACCOUNT")))
                 .andExpect(content().string(containsString(ticket.getCreatedDate().toString())));
     }
 
@@ -84,9 +92,23 @@ class TicketWebTests {
     }
 
     @Test
+    void rejectsTicketWithoutPriority() throws Exception {
+        mvc.perform(post("/tickets")
+                        .param("title", "Printer jammed")
+                        .param("description", "Paper stuck in tray 2.")
+                        .param("category", "HARDWARE"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("tickets/new"))
+                .andExpect(model().attributeExists("error"));
+        assertThat(tickets.count()).isZero();
+    }
+
+    @Test
     void listsAllTicketsNewestFirstAndEscapesUserContent() throws Exception {
-        tickets.saveAndFlush(new Ticket("Older", "First description"));
-        tickets.saveAndFlush(new Ticket("<script>alert(1)</script>", "Second description"));
+        tickets.saveAndFlush(new Ticket("Older", "First description",
+                Ticket.Priority.LOW, Ticket.Category.OTHER));
+        tickets.saveAndFlush(new Ticket("<script>alert(1)</script>", "Second description",
+                Ticket.Priority.LOW, Ticket.Category.OTHER));
 
         String html = mvc.perform(get("/tickets"))
                 .andExpect(status().isOk())
