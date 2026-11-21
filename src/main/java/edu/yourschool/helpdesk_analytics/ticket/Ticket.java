@@ -14,7 +14,7 @@ import jakarta.persistence.PrePersist;
 @Entity
 public class Ticket {
 
-    public enum Status { OPEN }
+    public enum Status { OPEN, IN_PROGRESS, RESOLVED, CLOSED }
 
     public enum Priority { LOW, MEDIUM, HIGH, CRITICAL }
 
@@ -45,6 +45,8 @@ public class Ticket {
     @Column(nullable = false, updatable = false)
     private Instant createdDate;
 
+    private Instant resolvedDate;
+
     protected Ticket() {
         // Required by JPA.
     }
@@ -61,6 +63,16 @@ public class Ticket {
         createdDate = Instant.now();
     }
 
+    TicketStatusHistory changeStatus(Status newStatus) {
+        Instant now = Instant.now();
+        TicketStatusHistory change = new TicketStatusHistory(this, status, newStatus, now);
+        status = newStatus;
+        if (newStatus == Status.RESOLVED && resolvedDate == null) {
+            resolvedDate = now;
+        }
+        return change;
+    }
+
     public Long getId() { return id; }
     public String getTitle() { return title; }
     public String getDescription() { return description; }
@@ -68,4 +80,5 @@ public class Ticket {
     public Priority getPriority() { return priority; }
     public Category getCategory() { return category; }
     public Instant getCreatedDate() { return createdDate; }
+    public Instant getResolvedDate() { return resolvedDate; }
 }

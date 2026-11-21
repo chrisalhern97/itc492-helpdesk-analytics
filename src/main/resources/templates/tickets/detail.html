@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title th:text="|Ticket ${ticket.id}|">Ticket</title>
+</head>
+<body>
+<main>
+    <h1 th:text="${ticket.title}"></h1>
+    <dl>
+        <dt>ID</dt><dd th:text="${ticket.id}"></dd>
+        <dt>Description</dt><dd th:text="${ticket.description}"></dd>
+        <dt>Status</dt><dd th:text="${ticket.status}"></dd>
+        <dt>Priority</dt><dd th:text="${ticket.priority}"></dd>
+        <dt>Category</dt><dd th:text="${ticket.category}"></dd>
+        <dt>Created (UTC)</dt><dd th:text="${ticket.createdDate}"></dd>
+        <dt>Resolved (UTC)</dt><dd th:text="${ticket.resolvedDate} ?: 'Not resolved yet'"></dd>
+    </dl>
+    <form th:action="@{/tickets/{id}/status(id=${ticket.id})}" method="post">
+        <p>
+            <label for="status">Change status</label><br>
+            <select id="status" name="status">
+                <option th:each="s : ${statuses}" th:value="${s}" th:text="${s}"
+                        th:selected="${s == ticket.status}"></option>
+            </select>
+        </p>
+        <button type="submit">Save status</button>
+    </form>
+    <h2>Status history</h2>
+    <p th:if="${#lists.isEmpty(history)}">No status changes yet.</p>
+    <table th:unless="${#lists.isEmpty(history)}">
+        <thead>
+        <tr><th scope="col">Change</th><th scope="col">Changed (UTC)</th></tr>
+        </thead>
+        <tbody>
+        <tr th:each="change : ${history}">
+            <td th:text="|${change.oldStatus} → ${change.newStatus}|"></td>
+            <td th:text="${change.changedAt}"></td>
+        </tr>
+        </tbody>
+    </table>
+    <p><a th:href="@{/tickets}">All tickets</a></p>
+</main>
+</body>
+</html>
