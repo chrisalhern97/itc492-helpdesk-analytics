@@ -1,5 +1,9 @@
 package edu.yourschool.helpdesk_analytics.ticket;
 
+import java.nio.charset.StandardCharsets;
+import java.time.Instant;
+import java.util.List;
+
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -24,6 +28,9 @@ class TicketWebTests {
 
     @Autowired
     private TicketRepository tickets;
+
+    @Autowired
+    private TicketStatusHistoryRepository history;
 
     @Test
     void rendersFormAndEmptyList() throws Exception {
@@ -116,5 +123,55 @@ class TicketWebTests {
                 .andExpect(content().string(not(containsString("<script>"))))
                 .andReturn().getResponse().getContentAsString();
         assertThat(html.indexOf("Second description")).isLessThan(html.indexOf("First description"));
+    }
+
+    @Test
+    void changingStatusRecordsHistoryOldestFirst() throws Exception {
+        Ticket ticket = tickets.saveAndFlush(new Ticket("VPN drops", "Disconnects every hour.",
+                Ticket.Priority.MEDIUM, Ticket.Category.NETWORK));
+        String detailUrl = "/tickets/" + ticket.getId();
+
+        mvc.perform(post(detailUrl + "/status").param("status", "IN_PROGRESS"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl(detailUrl));
+        mvc.perform(post(detailUrl + "/status").param("status", "CLOSED"));
+        mvc.perform(post(detailUrl + "/status").param("status", "CLOSED"));
+
+        List<TicketStatusHistory> rows = history.findByTicketOrderByIdAsc(ticket);
+        assertThat(rows).extracting(TicketStatusHistory::getOldStatus)
+                .containsExactly(Ticket.Status.OPEN, Ticket.Status.IN_PROGRESS);
+        assertThat(rows).extracting(TicketStatusHistory::getNewStatus)
+                .containsExactly(Ticket.Status.IN_PROGRESS, Ticket.Status.CLOSED);
+        assertThat(rows).allSatisfy(row -> assertThat(row.getChangedAt()).isNotNull());
+        assertThat(tickets.findById(ticket.getId()).orElseThrow().getStatus()).isEqualTo(Ticket.Status.CLOSED);
+
+        String html = mvc.perform(get(detailUrl))
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8);
+        assertThat(html).contains("VPN drops", "Disconnects every hour.", "MEDIUM", "NETWORK");
+        assertThat(html.indexOf("OPEN → IN_PROGRESS")).isNotNegative()
+                .isLessThan(html.indexOf("IN_PROGRESS → CLOSED"));
+
+        mvc.perform(get("/tickets"))
+                .andExpect(content().string(containsString("href=\"" + detailUrl + "\"")));
+    }
+
+    @Test
+    void resolvingRecordsResolvedTimeOnlyTheFirstTime() throws Exception {
+        Ticket ticket = tickets.saveAndFlush(new Ticket("Laptop won't boot", "Black screen after logo.",
+                Ticket.Priority.HIGH, Ticket.Category.HARDWARE));
+        String detailUrl = "/tickets/" + ticket.getId();
+        assertThat(ticket.getResolvedDate()).isNull();
+
+        mvc.perform(post(detailUrl + "/status").param("status", "RESOLVED"));
+        Instant firstResolved = tickets.findById(ticket.getId()).orElseThrow().getResolvedDate();
+        assertThat(firstResolved).isNotNull();
+
+        mvc.perform(get(detailUrl))
+                .andExpect(content().string(containsString(firstResolved.toString())));
+
+        mvc.perform(post(detailUrl + "/status").param("status", "OPEN"));
+        mvc.perform(post(detailUrl + "/status").param("status", "RESOLVED"));
+        assertThat(tickets.findById(ticket.getId()).orElseThrow().getResolvedDate()).isEqualTo(firstResolved);
     }
 }

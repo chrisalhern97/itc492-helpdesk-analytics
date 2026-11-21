@@ -1,21 +1,27 @@
 package edu.yourschool.helpdesk_analytics.ticket;
 
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.server.ResponseStatusException;
 
 @Controller
 @RequestMapping("/tickets")
 public class TicketController {
 
     private final TicketRepository tickets;
+    private final TicketStatusHistoryRepository history;
 
-    public TicketController(TicketRepository tickets) {
+    public TicketController(TicketRepository tickets, TicketStatusHistoryRepository history) {
         this.tickets = tickets;
+        this.history = history;
     }
 
     @GetMapping
@@ -47,6 +53,35 @@ public class TicketController {
         }
         tickets.save(new Ticket(title, description, chosenPriority, chosenCategory));
         return "redirect:/tickets";
+    }
+
+    @GetMapping("/{id}")
+    public String detail(@PathVariable Long id, Model model) {
+        Ticket ticket = find(id);
+        model.addAttribute("ticket", ticket);
+        model.addAttribute("history", history.findByTicketOrderByIdAsc(ticket));
+        model.addAttribute("statuses", Ticket.Status.values());
+        return "tickets/detail";
+    }
+
+    @PostMapping("/{id}/status")
+    @Transactional
+    public String changeStatus(@PathVariable Long id, @RequestParam(defaultValue = "") String status) {
+        Ticket ticket = find(id);
+        Ticket.Status newStatus = parse(Ticket.Status.class, status);
+        if (newStatus == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        }
+        if (newStatus != ticket.getStatus()) {
+            TicketStatusHistory change = ticket.changeStatus(newStatus);
+            tickets.save(ticket);
+            history.save(change);
+        }
+        return "redirect:/tickets/" + id;
+    }
+
+    private Ticket find(Long id) {
+        return tickets.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
     private String showForm(Model model, String title, String description, String priority, String category) {
