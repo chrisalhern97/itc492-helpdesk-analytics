@@ -81,6 +81,42 @@ has never seen your project can get it running in under ten minutes.*
 # setup steps go here
 ```
 
+## Demo Data
+
+The database starts empty. To fill it with repeatable synthetic tickets, start the app
+with the `helpdesk.demo-data` setting turned on. It is off by default.
+
+```powershell
+# Windows PowerShell
+.\mvnw.cmd spring-boot:run "-Dspring-boot.run.arguments=--helpdesk.demo-data=true"
+```
+
+You can also add `helpdesk.demo-data=true` to `src/main/resources/application.properties`
+(do not commit that change).
+
+**What gets generated** (`DemoDataGenerator` in the `ticket` package):
+
+- 300 tickets created during working hours over the 90 days before the app started,
+  with a mix of priorities, categories and statuses.
+- Each ticket moves through OPEN → IN_PROGRESS → RESOLVED → CLOSED at realistic
+  times, with a status history row for every change. Higher priorities are resolved
+  faster. Recent tickets are often still OPEN or IN_PROGRESS.
+- The generator uses a fixed random seed (492), so the tickets, their wording and
+  their timing are the same every run. Dates are relative to the moment the app
+  starts, so the calendar dates move with the day you run it.
+
+**Planted recurring problem:** 25 of the tickets report VPN / remote-access
+disconnects after a software update. They are all in category NETWORK, worded in
+several different ways (not all of them use the word "VPN"), and all created within
+the same two weeks, 32 to 45 days before startup. Ten ordinary VPN tickets (installs,
+password resets, access requests) are spread across the full 90 days, so the planted
+problem cannot be found just by searching for "VPN". Nothing in the database marks
+which tickets were planted.
+
+The demo data is loaded on every start. That is fine with H2, which starts empty;
+against a persistent database such as PostgreSQL it would add another 300 tickets
+each time.
+
 ## Deployment
 
 The course requires this application to be publicly hosted before the end of term,

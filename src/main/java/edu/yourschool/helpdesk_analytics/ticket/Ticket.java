@@ -58,17 +58,27 @@ public class Ticket {
         this.category = category;
     }
 
+    Ticket(String title, String description, Priority priority, Category category, Instant createdDate) {
+        this(title, description, priority, category);
+        this.createdDate = createdDate;
+    }
+
     @PrePersist
     private void recordCreatedDate() {
-        createdDate = Instant.now();
+        if (createdDate == null) {
+            createdDate = Instant.now();
+        }
     }
 
     TicketStatusHistory changeStatus(Status newStatus) {
-        Instant now = Instant.now();
-        TicketStatusHistory change = new TicketStatusHistory(this, status, newStatus, now);
+        return changeStatus(newStatus, Instant.now());
+    }
+
+    TicketStatusHistory changeStatus(Status newStatus, Instant changedAt) {
+        TicketStatusHistory change = new TicketStatusHistory(this, status, newStatus, changedAt);
         status = newStatus;
         if (newStatus == Status.RESOLVED && resolvedDate == null) {
-            resolvedDate = now;
+            resolvedDate = changedAt;
         }
         return change;
     }
