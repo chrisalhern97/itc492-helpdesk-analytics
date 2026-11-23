@@ -8,7 +8,7 @@
 <body>
 <main>
     <h1>Tickets</h1>
-    <p><a th:href="@{/tickets/new}">Submit a ticket</a></p>
+    <p><a th:href="@{/tickets/new}">Submit a ticket</a> · <a th:href="@{/recurring}">Likely recurring issues</a></p>
     <p th:if="${#lists.isEmpty(tickets)}">No tickets yet.</p>
     <table th:unless="${#lists.isEmpty(tickets)}">
         <thead>

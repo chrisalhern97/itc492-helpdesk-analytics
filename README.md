@@ -60,7 +60,7 @@ root causes, to check whether the analysis can find them on its own.
 | Backend | Java 21 + Spring Boot 4                                                                                                    | Primary language; Spring Boot's built-in CRUD scaffolding keeps the ticketing half deliberately small |
 | Database | H2 (local development), PostgreSQL (deployed)                                                                              | H2 needs no setup locally; PostgreSQL is the durable choice on the server. Spring Data JPA makes the switch a configuration change |
 | Hosting / Deploy | Oracle Cloud Free Tier VPS (Ubuntu), app run as a systemd service                                                          | Course requires public hosting before term end; Oracle's always-free tier covers it at no cost |
-| Analytics / Reporting | SQL aggregate queries (service metrics), Weka: StringToWordVector + SimpleKMeans (clustering), Chart.js (dashboard charts) | SQL handles MTTR / SLA / aging / volume directly; Weka is an established Java text-clustering library and is straightforward to cite in the report |
+| Analytics / Reporting | SQL aggregate queries (service metrics), TF-IDF word weights + cosine similarity in plain Java (recurring-issue grouping), Chart.js (dashboard charts) | SQL handles MTTR / SLA / aging / volume directly; TF-IDF and cosine similarity are standard, citable text-mining techniques that need no extra library and can group by wording, category and time together without choosing a number of clusters in advance |
 
 ## Repository Layout
 

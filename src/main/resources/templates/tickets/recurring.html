@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Likely recurring issues</title>
+</head>
+<body>
+<main>
+    <h1>Likely recurring issues</h1>
+    <p>Groups of tickets with similar wording in the same category, with at least 5 tickets within 14 days.</p>
+    <p th:if="${#lists.isEmpty(issues)}">No likely recurring issues found.</p>
+    <section th:each="issue : ${issues}">
+        <h2 th:text="|${issue.tickets().size()} ${issue.category()} tickets|"></h2>
+        <p th:text="|Created ${issue.firstCreated()} to ${issue.lastCreated()} (UTC)|"></p>
+        <p th:text="|Common words: ${#strings.listJoin(issue.topWords(), ', ')}|"></p>
+        <ul>
+            <li th:each="ticket : ${issue.tickets()}">
+                <a th:href="@{/tickets/{id}(id=${ticket.id})}" th:text="|#${ticket.id} ${ticket.title}|"></a>
+            </li>
+        </ul>
+    </section>
+    <p><a th:href="@{/tickets}">All tickets</a></p>
+</main>
+</body>
+</html>
